@@ -27,6 +27,12 @@ app.get('/campgrounds', async (req, res) => {
     res.render('campgrounds/index', { campgrounds });
 });
 
+app.get('/campgrounds/:id', async (req, res) => {
+    const { id } = req.params;
+    const campground = await Campground.findById(id);
+    res.render('campgrounds/show', { campground });
+});
+
 app.listen(3000, () => {
   console.log('3000번 포트에서 서버 대기 중입니다.');
 });

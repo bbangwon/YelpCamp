@@ -9,7 +9,7 @@
     <h1>모든 캠프그라운드</h1>
     <ul>
         <% for(let campground of campgrounds) { %>
-        <li><%= campground.title %></li>
+        <li><a href="/campgrounds/<%= campground._id %>"><%= campground.title %></a></li>
         <% } %>
     </ul>
 </body>
