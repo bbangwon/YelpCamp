@@ -22,10 +22,9 @@ app.get('/', (req, res) => {
     res.render('home');
 });
 
-app.get('/makecampground', async (req, res) => {
-    const camp = new Campground({title: '내 블랙야드', description: '저렴한 캠프장입니다.'});
-    await camp.save();
-    res.send(camp);
+app.get('/campgrounds', async (req, res) => {
+    const campgrounds = await Campground.find({});
+    res.render('campgrounds/index', { campgrounds });
 });
 
 app.listen(3000, () => {

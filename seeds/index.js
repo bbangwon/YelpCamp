@@ -4,7 +4,7 @@ import cities from './cities.js';
 import seedHelper from './seedHelpers.js';
 
 //Mongoose MongoDB 연결
-mongoose.connect('mongodb://localhost:27017/farmStand')
+mongoose.connect('mongodb://localhost:27017/yelp-camp')
 .then(() => {
     console.log('Database connected');
 })
