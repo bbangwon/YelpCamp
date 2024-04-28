@@ -13,6 +13,9 @@ db.once("open", () => {
 
 const app = express();
 
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+
 const viewsFolder = fileURLToPath(new URL("./views", import.meta.url));
 app.set('views', viewsFolder);
 app.set('view engine', 'ejs');
@@ -27,11 +30,31 @@ app.get('/campgrounds', async (req, res) => {
     res.render('campgrounds/index', { campgrounds });
 });
 
+app.get('/campgrounds/new', (req, res) => {
+  res.render('campgrounds/new');
+});
+
+app.post('/campgrounds', async (req, res) => {
+  try
+  {
+    const campground = new Campground(req.body);
+    await campground.save();
+    res.send({success: true, 
+      msg: '캠핑장 추가에 성공했습니다.', 
+      id: campground._id });
+  }
+  catch(e) {
+    res.send({success: false, 
+      msg: `캠핑장 추가에 실패했습니다. (${e.message})`});    
+  }
+});
+
 app.get('/campgrounds/:id', async (req, res) => {
     const { id } = req.params;
     const campground = await Campground.findById(id);
     res.render('campgrounds/show', { campground });
 });
+
 
 app.listen(3000, () => {
   console.log('3000번 포트에서 서버 대기 중입니다.');
