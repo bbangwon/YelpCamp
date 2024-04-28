@@ -55,6 +55,42 @@ app.get('/campgrounds/:id', async (req, res) => {
     res.render('campgrounds/show', { campground });
 });
 
+app.get('/campgrounds/:id/edit', async (req, res) => {
+  const { id } = req.params;
+  const campground = await Campground.findById(id);
+  res.render('campgrounds/edit', { campground });
+});
+
+app.put('/campgrounds/:id', async (req, res) => {
+  try
+  {
+    const { id } = req.params;
+    await Campground.findByIdAndUpdate(id, req.body);
+    res.send({success: true, 
+      msg: '캠핑장 수정에 성공했습니다.', 
+      id: id });
+  }
+  catch(e) {
+    res.send({success: false, 
+      msg: `캠핑장 수정에 실패했습니다. (${e.message})`});    
+  }
+});
+
+app.delete('/campgrounds/:id', async (req, res) => {
+  try
+  {
+    const { id } = req.params;
+    await Campground.findByIdAndDelete(id);
+    res.send({success: true, 
+      msg: '캠핑장 삭제에 성공했습니다.', 
+      id: id });
+  }
+  catch(e) {
+    res.send({success: false, 
+      msg: `캠핑장 삭제에 실패했습니다. (${e.message})`});    
+  }
+});
+
 
 app.listen(3000, () => {
   console.log('3000번 포트에서 서버 대기 중입니다.');

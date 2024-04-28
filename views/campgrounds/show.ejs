@@ -4,12 +4,35 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>캠핑장 보기</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 </head>
 <body>
     <h1><%= campground.title %></h1>
     <h2><%= campground.location %></h2>
     <footer>
+        <a href="/campgrounds/<%= campground._id %>/edit">수정</a>
+        <a href="#" id="submitButton">삭제</a>
         <a href="/campgrounds">모든 캠핑장</a>
     </footer>
+
+    <script>
+        const submitButton = document.querySelector('#submitButton');        
+        submitButton.addEventListener('click', e => {
+            e.preventDefault();
+
+            axios.delete(`/campgrounds/<%= campground._id %>`)
+                .then(res => {
+                    if (res.data.success) {
+                        window.location.href = '/campgrounds';
+                    } else {
+                        alert(res.data.msg);
+                    }
+                })
+                .catch(err => {
+                    alert(err.response.data.msg);
+                });
+        });
+    </script>
 </body>
 </html>
