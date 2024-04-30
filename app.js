@@ -1,6 +1,7 @@
 import express from 'express';
 import { fileURLToPath } from "url";
 import mongoose from 'mongoose';
+import ejsMate from 'ejs-mate';
 import Campground from './models/campground.js';
 
 mongoose.connect('mongodb://localhost:27017/yelp-camp');
@@ -16,9 +17,14 @@ const app = express();
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
+
+app.engine('ejs', ejsMate);
+
 const viewsFolder = fileURLToPath(new URL("./views", import.meta.url));
 app.set('views', viewsFolder);
 app.set('view engine', 'ejs');
+
+
 
 
 app.get('/', (req, res) => {
