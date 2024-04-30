@@ -1,15 +1,39 @@
 <% layout('/layouts/boilerplate') %>
-<form action="/campgrounds/<%= campground._id %>" method="post">
-    <div>
-        <label for="title">캠핑장 이름</label>
-        <input type="text" id="title" placeholder="이름" value="<%= campground.title %>">
+<div class="row">
+    <h1 class="text-center">캠핑장 수정</h1>
+    <div class="col-6 offset-3">
+        <form action="/campgrounds" method="post">
+            <div class="mb-3">
+                <label class="form-label" for="title">캠핑장 이름</label>
+                <input class="form-control" type="text" id="title" placeholder="이름" value="<%= campground.title %>">
+            </div>
+            <div class="mb-3">
+                <label class="form-label" for="location">캠핑장 위치</label>
+                <input class="form-control" type="text" id="location" placeholder="위치" value="<%= campground.location %>">
+            </div>
+            <div class="mb-3">
+                <label class="form-label" for="image">캠핑장 이미지 URL</label>
+                <input class="form-control" type="text" id="image" placeholder="https://" value="<%= campground.image %>">
+            </div>
+            <div class="mb-3">
+                <label class="form-label" for="price">캠핑장 가격</label>
+                <div class="input-group">
+                    <span class="input-group-text" id="price-label">￦</span>
+                    <input type="text" class="form-control" id="price" placeholder="0" value="<%= campground.price %>">
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label" for="description">캠핑장 설명</label>
+                <textarea class="form-control" id="description" placeholder="설명"><%= campground.description %></textarea>
+            </div>
+            <div class="mb-3">
+                <button class="btn btn-info" id="submitButton">캠핑장 수정</button>
+            </div>
+        </form>
+        <a href="/campgrounds">모든 캠핑장</a>
     </div>
-    <div>
-        <label for="location">위치</label>
-        <input type="text" id="location" placeholder="위치" value="<%= campground.location %>">
-    </div>
-    <button id="submitButton">캠핑장 수정</button>
-</form>
+</div>
 <a href="/campgrounds/<%= campground._id %>">뒤로가기</a>
 
 <script>
@@ -19,10 +43,16 @@
 
         const title = document.querySelector('#title');
         const location = document.querySelector('#location');
+        const image = document.querySelector('#image');
+        const price = document.querySelector('#price');
+        const description = document.querySelector('#description');
 
         axios.put(`/campgrounds/<%= campground._id %>`, {
             title: title.value,
-            location: location.value
+            location: location.value,
+            image: image.value,
+            price: price.value,
+            description: description.value
         })
             .then(res => {
                 if (res.data.success) {
