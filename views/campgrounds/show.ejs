@@ -1,29 +1,48 @@
 <% layout('/layouts/boilerplate') %>
-<h1><%= campground.title %></h1>
-<h2><%= campground.location %></h2>
-<img src="<%= campground.image %>" alt="">
-<p><%= campground.description %></p>
-<footer>
-    <a href="/campgrounds/<%= campground._id %>/edit">수정</a>
-    <a href="#" id="submitButton">삭제</a>
-    <a href="/campgrounds">모든 캠핑장</a>
-</footer>
+    <div class="row">
+        <div class="col-6 offset-3">
+            <div class="card mb-3">
+                <img src="<%= campground.image %>" class="card-img-top" alt="...">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <%= campground.title %>
+                    </h5>
+                    <p class="card-text">
+                        <%= campground.description %>
+                    </p>
+                </div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item text-muted">
+                        <%= campground.location %>
+                    </li>
+                    <li class="list-group-item">￦<%= campground.price %>/night</li>
+                </ul>
+                <div class="card-body">
+                    <a href="/campgrounds/<%= campground._id %>/edit" class="card-link btn btn-info">수정</a>
+                    <a href="#" id="submitButton" class="card-link btn btn-danger">삭제</a>
+                </div>
+                <div class="card-footer text-muted">
+                    2일 전
+                </div>
+            </div>            
+        </div>
+    </div>
+   
+    <script>
+        const submitButton = document.querySelector('#submitButton');
+        submitButton.addEventListener('click', e => {
+            e.preventDefault();
 
-<script>
-    const submitButton = document.querySelector('#submitButton');        
-    submitButton.addEventListener('click', e => {
-        e.preventDefault();
-
-        axios.delete(`/campgrounds/<%= campground._id %>`)
-            .then(res => {
-                if (res.data.success) {
-                    window.location.href = '/campgrounds';
-                } else {
-                    alert(res.data.msg);
-                }
-            })
-            .catch(err => {
-                alert(err.response.data.msg);
-            });
-    });
-</script>
+            axios.delete(`/campgrounds/<%= campground._id %>`)
+                .then(res => {
+                    if (res.data.success) {
+                        window.location.href = '/campgrounds';
+                    } else {
+                        alert(res.data.msg);
+                    }
+                })
+                .catch(err => {
+                    alert(err.response.data.msg);
+                });
+        });
+    </script>
