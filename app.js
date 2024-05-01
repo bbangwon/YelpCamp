@@ -2,6 +2,7 @@ import express from 'express';
 import { fileURLToPath } from "url";
 import mongoose from 'mongoose';
 import ejsMate from 'ejs-mate';
+import catchAsync from './utils/catchAsync.js';
 import Campground from './models/campground.js';
 
 mongoose.connect('mongodb://localhost:27017/yelp-camp');
@@ -17,93 +18,72 @@ const app = express();
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-
 app.engine('ejs', ejsMate);
 
 const viewsFolder = fileURLToPath(new URL("./views", import.meta.url));
 app.set('views', viewsFolder);
 app.set('view engine', 'ejs');
 
-
-
-
 app.get('/', (req, res) => {
     res.render('home');
 });
 
+//목록
 app.get('/campgrounds', async (req, res) => {
     const campgrounds = await Campground.find({});
     res.render('campgrounds/index', { campgrounds });
 });
 
+//추가
 app.get('/campgrounds/new', (req, res) => {
   res.render('campgrounds/new');
 });
 
-app.post('/campgrounds', async (req, res, next) => {
-  try
-  {
-    console.log("post /campgrounds", req.body);
-
+app.post('/campgrounds', catchAsync(async (req, res, next) => {
     const campground = new Campground(req.body);
     await campground.save();
     res.send({success: true, 
       msg: '캠핑장 추가에 성공했습니다.', 
       id: campground._id });
-  }
-  catch(e) {
-    next(e);
-  }
-});
+}));
 
-app.get('/campgrounds/:id', async (req, res) => {
+//세부정보
+app.get('/campgrounds/:id', catchAsync(async (req, res) => {
     const { id } = req.params;
     const campground = await Campground.findById(id);
     res.render('campgrounds/show', { campground });
-});
+}));
 
-app.get('/campgrounds/:id/edit', async (req, res) => {
+//수정
+app.get('/campgrounds/:id/edit', catchAsync(async (req, res) => {
   const { id } = req.params;
   const campground = await Campground.findById(id);
   res.render('campgrounds/edit', { campground });
-});
+}));
 
-app.put('/campgrounds/:id', async (req, res) => {
-  try
-  {
-    const { id } = req.params;
-    await Campground.findByIdAndUpdate(id, req.body);
-    res.send({success: true, 
-      msg: '캠핑장 수정에 성공했습니다.', 
-      id: id });
-  }
-  catch(e) {
-    res.send({success: false, 
-      msg: `캠핑장 수정에 실패했습니다. (${e.message})`});    
-  }
-});
+app.put('/campgrounds/:id', catchAsync(async (req, res) => {
+  const { id } = req.params;
+  await Campground.findByIdAndUpdate(id, req.body);
+  res.send({success: true, 
+    msg: '캠핑장 수정에 성공했습니다.', 
+    id: id });
+}));
 
-app.delete('/campgrounds/:id', async (req, res) => {
-  try
-  {
-    const { id } = req.params;
-    await Campground.findByIdAndDelete(id);
-    res.send({success: true, 
-      msg: '캠핑장 삭제에 성공했습니다.', 
-      id: id });
-  }
-  catch(e) {
-    res.send({success: false, 
-      msg: `캠핑장 삭제에 실패했습니다. (${e.message})`});    
-  }
-});
+//삭제
+app.delete('/campgrounds/:id', catchAsync(async (req, res) => {
+  const { id } = req.params;
+  await Campground.findByIdAndDelete(id);
+  res.send({success: true, 
+    msg: '캠핑장 삭제에 성공했습니다.', 
+    id: id });
+}));
 
+//에러처리
 app.use((err, req, res, next) => {
   console.error(err.stack);  
   res.send({success: false, 
     msg: `에러가 발생했습니다.`});  
 });
-
 
 app.listen(3000, () => {
   console.log('3000번 포트에서 서버 대기 중입니다.');
