@@ -2,10 +2,10 @@ import express from 'express';
 import { fileURLToPath } from "url";
 import mongoose from 'mongoose';
 import ejsMate from 'ejs-mate';
-import joi from 'joi';
 import catchAsync from './utils/catchAsync.js';
 import ExpressError from './utils/ExpressError.js';
 import Campground from './models/campground.js';
+import { campgroundSchema } from './schemas.js';
 
 mongoose.connect('mongodb://localhost:27017/yelp-camp');
 
@@ -26,6 +26,16 @@ const viewsFolder = fileURLToPath(new URL("./views", import.meta.url));
 app.set('views', viewsFolder);
 app.set('view engine', 'ejs');
 
+const validateCampground = (req, res, next) => {
+  const { error } = campgroundSchema.validate(req.body);
+  if (error) {
+    const msg = error.details.map(el => el.message).join(',');
+    throw new ExpressError(msg, 400);
+  } else{
+    next();
+  }
+};
+
 app.get('/', (req, res) => {
     res.render('home');
 });
@@ -41,20 +51,7 @@ app.get('/campgrounds/new', (req, res) => {
   res.render('campgrounds/new');
 });
 
-app.post('/campgrounds', catchAsync(async (req, res, next) => {
-    const campgroundSchema = joi.object({
-      title: joi.string().required(),
-      price: joi.number().required().min(0),
-      image: joi.string().required(),
-      location: joi.string().required(),
-      description: joi.string().required()
-    });
-    const { error } = campgroundSchema.validate(req.body);
-    if (error) {
-      const msg = error.details.map(el => el.message).join(',');
-      throw new ExpressError(msg, 400);
-    }
-
+app.post('/campgrounds', validateCampground, catchAsync(async (req, res, next) => {
     const campground = new Campground(req.body);    
     await campground.save();    
     res.send({success: true, 
@@ -76,7 +73,7 @@ app.get('/campgrounds/:id/edit', catchAsync(async (req, res) => {
   res.render('campgrounds/edit', { campground });
 }));
 
-app.put('/campgrounds/:id', catchAsync(async (req, res) => {
+app.put('/campgrounds/:id', validateCampground, catchAsync(async (req, res) => {
   const { id } = req.params;
   await Campground.findByIdAndUpdate(id, req.body);
   res.send({success: true, 
@@ -99,11 +96,9 @@ app.all('*', (req, res, next) => {
 
 //에러처리
 app.use((err, req, res, next) => {
-  console.log(err.stack);
   const {statusCode = 500, message = '에러가 발생했습니다.'} = err;  
 
   var contentType = req.header('content-type') || '';  
-  console.log(contentType);
   if(contentType == 'application/json') 
   {
     res.status(statusCode).send({success: false, msg: message});
