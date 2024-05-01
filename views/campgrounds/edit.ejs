@@ -2,30 +2,35 @@
 <div class="row">
     <h1 class="text-center">캠핑장 수정</h1>
     <div class="col-6 offset-3">
-        <form action="/campgrounds" method="post">
+        <form action="/campgrounds" method="post" novalidate class="validated-form">
             <div class="mb-3">
                 <label class="form-label" for="title">캠핑장 이름</label>
-                <input class="form-control" type="text" id="title" placeholder="이름" value="<%= campground.title %>">
+                <input class="form-control" type="text" id="title" placeholder="이름" value="<%= campground.title %>" required>
+                <div class="valid-feedback">입력완료!</div>
             </div>
             <div class="mb-3">
                 <label class="form-label" for="location">캠핑장 위치</label>
-                <input class="form-control" type="text" id="location" placeholder="위치" value="<%= campground.location %>">
+                <input class="form-control" type="text" id="location" placeholder="위치" value="<%= campground.location %>" required>
+                <div class="valid-feedback">입력완료!</div>
             </div>
             <div class="mb-3">
                 <label class="form-label" for="image">캠핑장 이미지 URL</label>
-                <input class="form-control" type="text" id="image" placeholder="https://" value="<%= campground.image %>">
+                <input class="form-control" type="text" id="image" placeholder="https://" value="<%= campground.image %>" required>
+                <div class="valid-feedback">입력완료!</div>
             </div>
             <div class="mb-3">
                 <label class="form-label" for="price">캠핑장 가격</label>
                 <div class="input-group">
                     <span class="input-group-text" id="price-label">￦</span>
-                    <input type="text" class="form-control" id="price" placeholder="0" value="<%= campground.price %>">
+                    <input type="text" class="form-control" id="price" placeholder="0" value="<%= campground.price %>" required>
+                    <div class="valid-feedback">입력완료!</div>
                 </div>
             </div>
 
             <div class="mb-3">
                 <label class="form-label" for="description">캠핑장 설명</label>
-                <textarea class="form-control" id="description" placeholder="설명"><%= campground.description %></textarea>
+                <textarea class="form-control" id="description" placeholder="설명" required><%= campground.description %></textarea>
+                <div class="valid-feedback">입력완료!</div>
             </div>
             <div class="mb-3">
                 <button class="btn btn-info" id="submitButton">캠핑장 수정</button>
@@ -37,9 +42,7 @@
 <a href="/campgrounds/<%= campground._id %>">뒤로가기</a>
 
 <script>
-    const submitButton = document.querySelector('#submitButton');        
-    submitButton.addEventListener('click', e => {
-        e.preventDefault();
+    const submitProcess = function() {
 
         const title = document.querySelector('#title');
         const location = document.querySelector('#location');
@@ -64,5 +67,29 @@
             .catch(err => {
                 alert(err.response.data.msg);
             });
-    });
+    };
+
+    (() => {
+    'use strict'
+
+    // Fetch all the forms we want to apply custom Bootstrap validation styles to
+    const forms = document.querySelectorAll('.validated-form')
+
+    // Loop over them and prevent submission
+    Array.from(forms).forEach(form => {
+        form.addEventListener('submit', event => {
+        const validity = form.checkValidity()
+        if (!validity) {
+            event.preventDefault();
+            event.stopPropagation();            
+        }
+        else
+        {
+            submitProcess();
+        }
+
+        form.classList.add('was-validated');
+        }, false)
+    })
+    })();
 </script>
