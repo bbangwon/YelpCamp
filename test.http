@@ -2,5 +2,6 @@ POST http://localhost:3000/campgrounds HTTP/1.1
 Content-Type: application/json
 
 {
-    "hello": "world"
+    "title": "My Backyard",
+    "price": -2
 }

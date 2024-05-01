@@ -2,6 +2,7 @@ import express from 'express';
 import { fileURLToPath } from "url";
 import mongoose from 'mongoose';
 import ejsMate from 'ejs-mate';
+import joi from 'joi';
 import catchAsync from './utils/catchAsync.js';
 import ExpressError from './utils/ExpressError.js';
 import Campground from './models/campground.js';
@@ -41,6 +42,19 @@ app.get('/campgrounds/new', (req, res) => {
 });
 
 app.post('/campgrounds', catchAsync(async (req, res, next) => {
+    const campgroundSchema = joi.object({
+      title: joi.string().required(),
+      price: joi.number().required().min(0),
+      image: joi.string().required(),
+      location: joi.string().required(),
+      description: joi.string().required()
+    });
+    const { error } = campgroundSchema.validate(req.body);
+    if (error) {
+      const msg = error.details.map(el => el.message).join(',');
+      throw new ExpressError(msg, 400);
+    }
+
     const campground = new Campground(req.body);    
     await campground.save();    
     res.send({success: true, 
