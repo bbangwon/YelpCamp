@@ -42,7 +42,7 @@ app.get('/campgrounds/new', (req, res) => {
 
 app.post('/campgrounds', catchAsync(async (req, res, next) => {
     const campground = new Campground(req.body);    
-    await campground.save();
+    await campground.save();    
     res.send({success: true, 
       msg: '캠핑장 추가에 성공했습니다.', 
       id: campground._id });
@@ -92,11 +92,11 @@ app.use((err, req, res, next) => {
   console.log(contentType);
   if(contentType == 'application/json') 
   {
-    res.status(statusCode).send({success: false, msg: message});    
+    res.status(statusCode).send({success: false, msg: message});
   }
   else 
   {
-    res.status(statusCode).send(message);
+    res.status(statusCode).render('error', { err });
   }
 });
 
