@@ -40,9 +40,11 @@ app.get('/campgrounds/new', (req, res) => {
   res.render('campgrounds/new');
 });
 
-app.post('/campgrounds', async (req, res) => {
+app.post('/campgrounds', async (req, res, next) => {
   try
   {
+    console.log("post /campgrounds", req.body);
+
     const campground = new Campground(req.body);
     await campground.save();
     res.send({success: true, 
@@ -50,8 +52,7 @@ app.post('/campgrounds', async (req, res) => {
       id: campground._id });
   }
   catch(e) {
-    res.send({success: false, 
-      msg: `캠핑장 추가에 실패했습니다. (${e.message})`});    
+    next(e);
   }
 });
 
@@ -95,6 +96,12 @@ app.delete('/campgrounds/:id', async (req, res) => {
     res.send({success: false, 
       msg: `캠핑장 삭제에 실패했습니다. (${e.message})`});    
   }
+});
+
+app.use((err, req, res, next) => {
+  console.error(err.stack);  
+  res.send({success: false, 
+    msg: `에러가 발생했습니다.`});  
 });
 
 
