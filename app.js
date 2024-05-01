@@ -3,6 +3,7 @@ import { fileURLToPath } from "url";
 import mongoose from 'mongoose';
 import ejsMate from 'ejs-mate';
 import catchAsync from './utils/catchAsync.js';
+import ExpressError from './utils/ExpressError.js';
 import Campground from './models/campground.js';
 
 mongoose.connect('mongodb://localhost:27017/yelp-camp');
@@ -40,7 +41,7 @@ app.get('/campgrounds/new', (req, res) => {
 });
 
 app.post('/campgrounds', catchAsync(async (req, res, next) => {
-    const campground = new Campground(req.body);
+    const campground = new Campground(req.body);    
     await campground.save();
     res.send({success: true, 
       msg: '캠핑장 추가에 성공했습니다.', 
@@ -78,11 +79,25 @@ app.delete('/campgrounds/:id', catchAsync(async (req, res) => {
     id: id });
 }));
 
+app.all('*', (req, res, next) => {
+  next(new ExpressError('페이지를 찾을 수 없어요.', 404));
+});
+
 //에러처리
 app.use((err, req, res, next) => {
-  console.error(err.stack);  
-  res.send({success: false, 
-    msg: `에러가 발생했습니다.`});  
+  console.log(err.stack);
+  const {statusCode = 500, message = '에러가 발생했습니다.'} = err;  
+
+  var contentType = req.header('content-type') || '';  
+  console.log(contentType);
+  if(contentType == 'application/json') 
+  {
+    res.status(statusCode).send({success: false, msg: message});    
+  }
+  else 
+  {
+    res.status(statusCode).send(message);
+  }
 });
 
 app.listen(3000, () => {
