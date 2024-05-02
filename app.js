@@ -5,6 +5,7 @@ import ejsMate from 'ejs-mate';
 import catchAsync from './utils/catchAsync.js';
 import ExpressError from './utils/ExpressError.js';
 import Campground from './models/campground.js';
+import Review from './models/review.js';
 import { campgroundSchema } from './schemas.js';
 
 mongoose.connect('mongodb://localhost:27017/yelp-camp');
@@ -89,6 +90,19 @@ app.delete('/campgrounds/:id', catchAsync(async (req, res) => {
   await Campground.findByIdAndDelete(id);
   res.send({success: true, 
     msg: '캠핑장 삭제에 성공했습니다.', 
+    id: id });
+}));
+
+
+app.post('/campgrounds/:id/reviews', catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const campground = await Campground.findById(id);
+  const review = new Review(req.body);
+  campground.reviews.push(review);
+  await review.save();
+  await campground.save();
+  res.send({success: true, 
+    msg: '리뷰 추가에 성공했습니다.', 
     id: id });
 }));
 

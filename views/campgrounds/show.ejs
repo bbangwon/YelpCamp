@@ -36,7 +36,7 @@
                     <label for="body" class="form-label">리뷰</label>
                     <textarea class="form-control" id="body" rows="3"></textarea>
                 </div>
-                <button type="submit" class="btn btn-success">작성</button>
+                <button id="reviewButton" class="btn btn-success">작성</button>
             </form>
         </div>
     </div>
@@ -50,6 +50,29 @@
                 .then(res => {
                     if (res.data.success) {
                         window.location.href = '/campgrounds';
+                    } else {
+                        alert(res.data.msg);
+                    }
+                })
+                .catch(err => {
+                    alert(err.response.data.msg);
+                });
+        });
+
+        const reviewButton = document.querySelector('#reviewButton');
+        reviewButton.addEventListener('click', e => {
+            e.preventDefault();
+
+            const rating = document.querySelector('#rating').value;
+            const body = document.querySelector('#body').value;
+
+            axios.post(`/campgrounds/<%= campground._id %>/reviews`, {
+                    rating,
+                    body
+                })
+                .then(res => {
+                    if (res.data.success) {
+                        window.location.reload();
                     } else {
                         alert(res.data.msg);
                     }
