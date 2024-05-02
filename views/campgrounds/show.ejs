@@ -19,18 +19,31 @@
                 </ul>
                 <div class="card-body">
                     <a href="/campgrounds/<%= campground._id %>/edit" class="card-link btn btn-info">수정</a>
-                    <a href="#" id="submitButton" class="card-link btn btn-danger">삭제</a>
+                    <a href="#" id="deleteButton" class="card-link btn btn-danger">삭제</a>
                 </div>
                 <div class="card-footer text-muted">
                     2일 전
                 </div>
-            </div>            
+            </div>
+            <!-- 리뷰 폼 -->
+            <h2>리뷰를 남겨주세요</h2>
+            <form action="" class="mb-3">
+                <div class="mb-3">
+                    <label for="rating" class="form-label">점수</label>
+                    <input type="range" class="form-range" min="1" max="5" name="rating" id="rating">
+                </div>
+                <div class="mb-3">
+                    <label for="body" class="form-label">리뷰</label>
+                    <textarea class="form-control" id="body" rows="3"></textarea>
+                </div>
+                <button type="submit" class="btn btn-success">작성</button>
+            </form>
         </div>
     </div>
    
     <script>
-        const submitButton = document.querySelector('#submitButton');
-        submitButton.addEventListener('click', e => {
+        const deleteButton = document.querySelector('#deleteButton');
+        deleteButton.addEventListener('click', e => {
             e.preventDefault();
 
             axios.delete(`/campgrounds/<%= campground._id %>`)
