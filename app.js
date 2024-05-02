@@ -26,6 +26,8 @@ const viewsFolder = fileURLToPath(new URL("./views", import.meta.url));
 app.set('views', viewsFolder);
 app.set('view engine', 'ejs');
 
+app.use(express.static('public'));
+
 const validateCampground = (req, res, next) => {
   const { error } = campgroundSchema.validate(req.body);
   if (error) {
