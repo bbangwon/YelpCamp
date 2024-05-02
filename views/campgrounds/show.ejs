@@ -1,6 +1,6 @@
 <% layout('/layouts/boilerplate') %>
     <div class="row">
-        <div class="col-6 offset-3">
+        <div class="col-6">
             <div class="card mb-3">
                 <img src="<%= campground.image %>" class="card-img-top" alt="...">
                 <div class="card-body">
@@ -24,7 +24,9 @@
                 <div class="card-footer text-muted">
                     2일 전
                 </div>
-            </div>
+            </div>            
+        </div>
+        <div class="col-6">
             <!-- 리뷰 폼 -->
             <h2>리뷰를 남겨주세요</h2>
             <form id="reviewForm" action="" class="mb-3 validated-form" novalidate>
@@ -40,11 +42,17 @@
                 <button id="reviewButton" class="btn btn-success">작성</button>
             </form>
             <% for(let review of campground.reviews) { %>
-            <div class="mb-3">
-                <p>평점 : <%= review.rating %></p>
-                <p>리뷰 : <%= review.body %></p>
-            </div>
-            <% } %>
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            평점 : <%= review.rating %>
+                        </h5>
+                        <p class="card-text">
+                            리뷰 : <%= review.body %>
+                        </p>
+                    </div>
+                </div>
+                <% } %>
         </div>
     </div>
 
@@ -92,7 +100,7 @@
                 })
                 .catch(err => {
                     alert(err.response.data.msg);
-                });            
+                });
         });
 
     </script>
