@@ -29,7 +29,7 @@
             <h2>리뷰를 남겨주세요</h2>
             <form id="reviewForm" action="" class="mb-3 validated-form" novalidate>
                 <div class="mb-3">
-                    <label for="rating" class="form-label">점수</label>
+                    <label for="rating" class="form-label">평점</label>
                     <input type="range" class="form-range" min="1" max="5" name="rating" id="rating">
                 </div>
                 <div class="mb-3">
@@ -39,6 +39,12 @@
                 </div>
                 <button id="reviewButton" class="btn btn-success">작성</button>
             </form>
+            <% for(let review of campground.reviews) { %>
+            <div class="mb-3">
+                <p>평점 : <%= review.rating %></p>
+                <p>리뷰 : <%= review.body %></p>
+            </div>
+            <% } %>
         </div>
     </div>
 
