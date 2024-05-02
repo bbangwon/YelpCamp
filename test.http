@@ -4,3 +4,13 @@ Content-Type: application/json
 {
     "title": "My Backyard"
 }
+
+###
+
+POST http://localhost:3000/campgrounds/66308f2610e62d7183ea37c2/reviews HTTP/1.1
+Content-Type: application/json
+
+{
+    "rating": 10,
+    "body": "My Backyard"
+}

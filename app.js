@@ -6,7 +6,7 @@ import catchAsync from './utils/catchAsync.js';
 import ExpressError from './utils/ExpressError.js';
 import Campground from './models/campground.js';
 import Review from './models/review.js';
-import { campgroundSchema } from './schemas.js';
+import { campgroundSchema, reviewSchema } from './schemas.js';
 
 mongoose.connect('mongodb://localhost:27017/yelp-camp');
 
@@ -31,6 +31,16 @@ app.use(express.static('public'));
 
 const validateCampground = (req, res, next) => {
   const { error } = campgroundSchema.validate(req.body);
+  if (error) {
+    const msg = error.details.map(el => el.message).join(',');
+    throw new ExpressError(msg, 400);
+  } else{
+    next();
+  }
+};
+
+const validateReview = (req, res, next) => {
+  const { error } = reviewSchema.validate(req.body);
   if (error) {
     const msg = error.details.map(el => el.message).join(',');
     throw new ExpressError(msg, 400);
@@ -94,7 +104,7 @@ app.delete('/campgrounds/:id', catchAsync(async (req, res) => {
 }));
 
 
-app.post('/campgrounds/:id/reviews', catchAsync(async (req, res) => {
+app.post('/campgrounds/:id/reviews', validateReview, catchAsync(async (req, res) => {
   const { id } = req.params;
   const campground = await Campground.findById(id);
   const review = new Review(req.body);

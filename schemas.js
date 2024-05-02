@@ -7,3 +7,8 @@ export const campgroundSchema = joi.object({
     location: joi.string().required(),
     description: joi.string().required()
   });
+
+export const reviewSchema = joi.object({
+    body: joi.string().required(),
+    rating: joi.number().required().min(1).max(5)
+  });
