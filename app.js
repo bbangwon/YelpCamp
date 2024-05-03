@@ -116,6 +116,15 @@ app.post('/campgrounds/:id/reviews', validateReview, catchAsync(async (req, res)
     id: id });
 }));
 
+app.delete('/campgrounds/:id/reviews/:reviewId', catchAsync(async (req, res) => {
+  const { id, reviewId } = req.params;
+  await Campground.findByIdAndUpdate(id, { $pull: { reviews: reviewId } });
+  await Review.findByIdAndDelete(reviewId);
+  res.send({success: true, 
+    msg: '리뷰 삭제에 성공했습니다.', 
+    id: id });
+}));
+
 app.all('*', (req, res, next) => {
   next(new ExpressError('페이지를 찾을 수 없어요.', 404));
 });

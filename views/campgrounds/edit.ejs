@@ -2,7 +2,7 @@
     <div class="row">
         <h1 class="text-center">캠핑장 수정</h1>
         <div class="col-6 offset-3">
-            <form action="/campgrounds" method="post" novalidate class="validated-form" id="editForm">
+            <form action="/campgrounds/<%= campground._id %>" method="post" novalidate class="validated-form" id="editForm">
                 <div class="mb-3">
                     <label class="form-label" for="title">캠핑장 이름</label>
                     <input class="form-control" type="text" id="title" placeholder="이름" value="<%= campground.title %>"
@@ -51,7 +51,8 @@
         editButton.addEventListener('click', e => {
             e.preventDefault();
             //Form Vaildation
-            if (!formVaildation(document.querySelector('#editForm'))) {
+            const form = document.querySelector('#editForm');
+            if (!formVaildation(form)) {
                 return;
             }
 
@@ -61,7 +62,7 @@
             const price = document.querySelector('#price');
             const description = document.querySelector('#description');
 
-            axios.put(`/campgrounds/<%= campground._id %>`, {
+            axios.put(form.action, {
                 title: title.value,
                 location: location.value,
                 image: image.value,
