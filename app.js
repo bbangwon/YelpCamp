@@ -2,12 +2,9 @@ import express from 'express';
 import { fileURLToPath } from "url";
 import mongoose from 'mongoose';
 import ejsMate from 'ejs-mate';
-import catchAsync from './utils/catchAsync.js';
 import ExpressError from './utils/ExpressError.js';
-import Campground from './models/campground.js';
-import Review from './models/review.js';
-import { reviewSchema } from './schemas.js';
 import campgrounds from './routes/campgrounds.js';
+import reviews from './routes/reviews.js';
 
 mongoose.connect('mongodb://localhost:27017/yelp-camp');
 
@@ -30,42 +27,12 @@ app.set('view engine', 'ejs');
 
 app.use(express.static('public'));
 
-const validateReview = (req, res, next) => {
-  const { error } = reviewSchema.validate(req.body);
-  if (error) {
-    const msg = error.details.map(el => el.message).join(',');
-    throw new ExpressError(msg, 400);
-  } else{
-    next();
-  }
-};
-
 app.use('/campgrounds', campgrounds);
+app.use('/campgrounds/:id/reviews', reviews);
 
 app.get('/', (req, res) => {
     res.render('home');
 });
-
-app.post('/campgrounds/:id/reviews', validateReview, catchAsync(async (req, res) => {
-  const { id } = req.params;
-  const campground = await Campground.findById(id);
-  const review = new Review(req.body);
-  campground.reviews.push(review);
-  await review.save();
-  await campground.save();
-  res.send({success: true, 
-    msg: '리뷰 추가에 성공했습니다.', 
-    id: id });
-}));
-
-app.delete('/campgrounds/:id/reviews/:reviewId', catchAsync(async (req, res) => {
-  const { id, reviewId } = req.params;
-  await Campground.findByIdAndUpdate(id, { $pull: { reviews: reviewId } });
-  await Review.findByIdAndDelete(reviewId);
-  res.send({success: true, 
-    msg: '리뷰 삭제에 성공했습니다.', 
-    id: id });
-}));
 
 app.all('*', (req, res, next) => {
   next(new ExpressError('페이지를 찾을 수 없어요.', 404));
