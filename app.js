@@ -25,7 +25,8 @@ const viewsFolder = fileURLToPath(new URL("./views", import.meta.url));
 app.set('views', viewsFolder);
 app.set('view engine', 'ejs');
 
-app.use(express.static('public'));
+const publicFolder = fileURLToPath(new URL("./public", import.meta.url));
+app.use(express.static(publicFolder));
 
 app.use('/campgrounds', campgrounds);
 app.use('/campgrounds/:id/reviews', reviews);
