@@ -2,6 +2,7 @@ import express from 'express';
 import { fileURLToPath } from "url";
 import mongoose from 'mongoose';
 import ejsMate from 'ejs-mate';
+import session from 'express-session';
 import ExpressError from './utils/ExpressError.js';
 import campgrounds from './routes/campgrounds.js';
 import reviews from './routes/reviews.js';
@@ -27,6 +28,18 @@ app.set('view engine', 'ejs');
 
 const publicFolder = fileURLToPath(new URL("./public", import.meta.url));
 app.use(express.static(publicFolder));
+
+const sessionConfig = {
+  secret: 'thisshouldbeabettersecret!', //세션 암호화에 사용할 키
+  resave: false,  //세션에 변화가 없어도 다시 저장할지 여부
+  saveUninitialized: true,  //세션에 저장된 내용이 없어도 저장할지 여부
+  cookie: {
+    httpOnly: true,  //자바스크립트로 쿠키에 접근하지 못하도록 함
+    expires: Date.now() + 1000 * 60 * 60 * 24 * 7,  //쿠키 만료 시간
+    maxAge: 1000 * 60 * 60 * 24 * 7 //쿠키 만료 시간
+  }
+}
+app.use(session(sessionConfig));  
 
 app.use('/campgrounds', campgrounds);
 app.use('/campgrounds/:id/reviews', reviews);
