@@ -3,6 +3,7 @@ import { fileURLToPath } from "url";
 import mongoose from 'mongoose';
 import ejsMate from 'ejs-mate';
 import session from 'express-session';
+import flash from 'connect-flash';
 import ExpressError from './utils/ExpressError.js';
 import campgrounds from './routes/campgrounds.js';
 import reviews from './routes/reviews.js';
@@ -39,7 +40,14 @@ const sessionConfig = {
     maxAge: 1000 * 60 * 60 * 24 * 7 //쿠키 만료 시간
   }
 }
-app.use(session(sessionConfig));  
+app.use(session(sessionConfig));
+app.use(flash());  
+
+app.use((req, res, next) => {
+  res.locals.success = req.flash('success');
+  res.locals.error = req.flash('error');
+  next();
+});
 
 app.use('/campgrounds', campgrounds);
 app.use('/campgrounds/:id/reviews', reviews);
