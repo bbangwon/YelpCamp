@@ -32,10 +32,10 @@ router.post('/', validateCampground, catchAsync(async (req, res, next) => {
 
   const campground = new Campground(req.body);
   await campground.save();
-  req.flash('success', '캠핑장 추가에 성공했습니다.');
+  req.flash('success', '캠핑장을 추가했습니다.');
   res.send({
     success: true,
-    msg: '캠핑장 추가에 성공했습니다.',
+    msg: '캠핑장을 추가했습니다.',
     id: campground._id
   });
 }));
@@ -50,16 +50,17 @@ router.get('/:id', catchAsync(async (req, res) => {
 //수정
 router.get('/:id/edit', catchAsync(async (req, res) => {
   const { id } = req.params;
-  const campground = await Campground.findById(id);
+  const campground = await Campground.findById(id);  
   res.render('campgrounds/edit', { campground });
 }));
 
 router.put('/:id', validateCampground, catchAsync(async (req, res) => {
   const { id } = req.params;
   await Campground.findByIdAndUpdate(id, req.body);
+  req.flash('success', '캠핑장을 수정했습니다.');
   res.send({
     success: true,
-    msg: '캠핑장 수정에 성공했습니다.',
+    msg: '캠핑장을 수정했습니다.',
     id: id
   });
 }));
@@ -68,9 +69,10 @@ router.put('/:id', validateCampground, catchAsync(async (req, res) => {
 router.delete('/:id', catchAsync(async (req, res) => {
   const { id } = req.params;
   await Campground.findByIdAndDelete(id);
+  req.flash('success', '캠핑장을 삭제했습니다.');
   res.send({
     success: true,
-    msg: '캠핑장 삭제에 성공했습니다.',
+    msg: '캠핑장을 삭제했습니다.',
     id: id
   });
 }));
