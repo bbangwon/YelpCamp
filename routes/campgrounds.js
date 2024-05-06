@@ -44,6 +44,10 @@ router.post('/', validateCampground, catchAsync(async (req, res, next) => {
 router.get('/:id', catchAsync(async (req, res) => {
   const { id } = req.params;
   const campground = await Campground.findById(id).populate('reviews');
+  if(!campground){
+    req.flash('error', '캠핑장을 찾을 수 없습니다.');
+    return res.redirect('/campgrounds');
+  }
   res.render('campgrounds/show', { campground });
 }));
 
@@ -51,6 +55,10 @@ router.get('/:id', catchAsync(async (req, res) => {
 router.get('/:id/edit', catchAsync(async (req, res) => {
   const { id } = req.params;
   const campground = await Campground.findById(id);  
+  if(!campground){
+    req.flash('error', '캠핑장을 찾을 수 없습니다.');
+    return res.redirect('/campgrounds');
+  }
   res.render('campgrounds/edit', { campground });
 }));
 
