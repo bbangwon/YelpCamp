@@ -35,5 +35,15 @@ router.post('/login', passport.authenticate('local', {
     res.redirect('/campgrounds');
 });
 
+router.get('/logout', (req, res, next) => {
+    req.logout(function (err) {
+        if (err) {
+            return next(err);
+        }
+        req.flash('success', '로그아웃 되었습니다.');
+        res.redirect('/campgrounds');
+    });
+}); 
+
 
 export default router;
