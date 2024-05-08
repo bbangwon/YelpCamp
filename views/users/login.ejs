@@ -1,0 +1,41 @@
+<% layout('/layouts/boilerplate') %>
+<h1>로그인</h1>
+<form action="/login" method="post" class="validated-form" novalidate id="loginForm">
+    <div class="mb-3">
+        <label class="form-label" for="username">이름</label>
+        <input class="form-control" type="text" id="username" placeholder="이름입력" required>
+        <div class="valid-feedback">작성완료!</div>
+    </div>
+    <div class="mb-3">
+        <label class="form-label" for="password">암호</label>
+        <input class="form-control" type="password" id="password" placeholder="암호입력" required>
+        <div class="valid-feedback">작성완료!</div>
+    </div>
+    <div class="mb-3">
+        <button class="btn btn-success" id="loginButton">로그인</button>
+    </div>
+</form>
+
+<script>
+    const submitButton = document.querySelector('#loginButton');
+    submitButton.addEventListener('click', e => {
+        e.preventDefault();
+        //Form Vaildation
+        const form = document.querySelector('#loginForm');
+        if (!formVaildation(form)) {
+            return;
+        }
+
+        const username = document.querySelector('#username');
+        const password = document.querySelector('#password');
+
+        axios.post(form.action, {
+            username: username.value,
+            password: password.value
+        }).then(res => {
+            window.location.href = '/campgrounds';
+        }).catch(err => {
+            window.location.href = '/login';
+        });       
+    });
+</script>
