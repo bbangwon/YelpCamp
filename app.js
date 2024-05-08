@@ -5,6 +5,10 @@ import ejsMate from 'ejs-mate';
 import session from 'express-session';
 import flash from 'connect-flash';
 import ExpressError from './utils/ExpressError.js';
+import passport from 'passport';
+import LocalStrategy from 'passport-local';
+
+import User from './models/user.js';
 import campgrounds from './routes/campgrounds.js';
 import reviews from './routes/reviews.js';
 
@@ -43,10 +47,23 @@ const sessionConfig = {
 app.use(session(sessionConfig));
 app.use(flash());  
 
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(new LocalStrategy(User.authenticate()));
+
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+
 app.use((req, res, next) => {
   res.locals.success = req.flash('success');
   res.locals.error = req.flash('error');
   next();
+});
+
+app.get('/fakeUser', async (req, res) => {
+  const user = new User({ email: 'bbangwon@gmail.com', username: '빵원' });
+  const newUser = await User.register(user, 'password');
+  res.send(newUser);
 });
 
 app.use('/campgrounds', campgrounds);
