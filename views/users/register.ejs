@@ -1,0 +1,49 @@
+<% layout('/layouts/boilerplate') %>
+<h1>회원가입</h1>
+<form action="/register" method="post" class="validated-form" novalidate id="registerForm">
+    <div class="mb-3">
+        <label class="form-label" for="username">이름</label>
+        <input class="form-control" type="text" id="username" placeholder="이름입력" required>
+        <div class="valid-feedback">작성완료!</div>
+    </div>
+    <div class="mb-3">
+        <label class="form-label" for="username">이메일</label>
+        <input class="form-control" type="email" id="email" placeholder="이메일" required>
+        <div class="valid-feedback">작성완료!</div>
+    </div>
+    <div class="mb-3">
+        <label class="form-label" for="password">암호</label>
+        <input class="form-control" type="password" id="password" placeholder="암호입력" required>
+        <div class="valid-feedback">작성완료!</div>
+    </div>
+    <div class="mb-3">
+        <button class="btn btn-success" id="registerButton">가입</button>
+    </div>
+</form>
+
+<script>
+    const submitButton = document.querySelector('#registerButton');
+    submitButton.addEventListener('click', e => {
+        e.preventDefault();
+        //Form Vaildation
+        const form = document.querySelector('#registerForm');
+        if (!formVaildation(form)) {
+            return;
+        }
+
+        const username = document.querySelector('#username');
+        const email = document.querySelector('#email');
+        const password = document.querySelector('#password');
+
+        axios.post(form.action, {
+            username: username.value,
+            email: email.value,
+            password: password.value
+        }).then(res => {
+            console.log(res.data);
+            //window.location.href = '/';
+        }).catch(err => {
+            console.error(err);
+        });       
+    });
+</script>

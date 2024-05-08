@@ -7,10 +7,11 @@ import flash from 'connect-flash';
 import ExpressError from './utils/ExpressError.js';
 import passport from 'passport';
 import LocalStrategy from 'passport-local';
-
 import User from './models/user.js';
-import campgrounds from './routes/campgrounds.js';
-import reviews from './routes/reviews.js';
+
+import userRoutes from './routes/users.js'; 
+import campgroundRoutes from './routes/campgrounds.js';
+import reviewRoutes from './routes/reviews.js';
 
 mongoose.connect('mongodb://localhost:27017/yelp-camp');
 
@@ -60,14 +61,9 @@ app.use((req, res, next) => {
   next();
 });
 
-app.get('/fakeUser', async (req, res) => {
-  const user = new User({ email: 'bbangwon@gmail.com', username: '빵원' });
-  const newUser = await User.register(user, 'password');
-  res.send(newUser);
-});
-
-app.use('/campgrounds', campgrounds);
-app.use('/campgrounds/:id/reviews', reviews);
+app.use('/', userRoutes);
+app.use('/campgrounds', campgroundRoutes);
+app.use('/campgrounds/:id/reviews', reviewRoutes);
 
 app.get('/', (req, res) => {
     res.render('home');
