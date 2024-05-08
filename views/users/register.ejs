@@ -40,10 +40,9 @@
             email: email.value,
             password: password.value
         }).then(res => {
-            console.log(res.data);
-            //window.location.href = '/';
+            window.location.href = '/campgrounds';
         }).catch(err => {
-            console.error(err);
+            window.location.href = '/register';
         });       
     });
 </script>
