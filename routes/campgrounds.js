@@ -3,6 +3,7 @@ import catchAsync from '../utils/catchAsync.js';
 import ExpressError from '../utils/ExpressError.js';
 import Campground from '../models/campground.js';
 import { campgroundSchema } from '../schemas.js';
+import { isLoggedIn } from '../middleware.js';
 
 const router = express.Router();
 
@@ -24,11 +25,11 @@ router.get('/', async (req, res) => {
 });
 
 //추가
-router.get('/new', (req, res) => {
+router.get('/new', isLoggedIn, (req, res) => {
   res.render('campgrounds/new');
 });
 
-router.post('/', validateCampground, catchAsync(async (req, res, next) => {
+router.post('/', isLoggedIn, validateCampground, catchAsync(async (req, res, next) => {
 
   const campground = new Campground(req.body);
   await campground.save();
@@ -52,7 +53,7 @@ router.get('/:id', catchAsync(async (req, res) => {
 }));
 
 //수정
-router.get('/:id/edit', catchAsync(async (req, res) => {
+router.get('/:id/edit', isLoggedIn, catchAsync(async (req, res) => {
   const { id } = req.params;
   const campground = await Campground.findById(id);  
   if(!campground){
@@ -62,7 +63,7 @@ router.get('/:id/edit', catchAsync(async (req, res) => {
   res.render('campgrounds/edit', { campground });
 }));
 
-router.put('/:id', validateCampground, catchAsync(async (req, res) => {
+router.put('/:id', isLoggedIn, validateCampground, catchAsync(async (req, res) => {
   const { id } = req.params;
   await Campground.findByIdAndUpdate(id, req.body);
   req.flash('success', '캠핑장을 수정했습니다.');
@@ -74,7 +75,7 @@ router.put('/:id', validateCampground, catchAsync(async (req, res) => {
 }));
 
 //삭제
-router.delete('/:id', catchAsync(async (req, res) => {
+router.delete('/:id', isLoggedIn, catchAsync(async (req, res) => {
   const { id } = req.params;
   await Campground.findByIdAndDelete(id);
   req.flash('success', '캠핑장을 삭제했습니다.');
