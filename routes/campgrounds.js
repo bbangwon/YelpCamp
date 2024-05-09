@@ -1,22 +1,9 @@
 import express from 'express';
 import catchAsync from '../utils/catchAsync.js';
-import ExpressError from '../utils/ExpressError.js';
 import Campground from '../models/campground.js';
-import { campgroundSchema } from '../schemas.js';
-import { isLoggedIn } from '../middleware.js';
+import { isLoggedIn, validateCampground, isAuthor } from '../middleware.js';
 
 const router = express.Router();
-
-const validateCampground = (req, res, next) => {
-  const { error } = campgroundSchema.validate(req.body);
-  if (error) {
-    const msg = error.details.map(el => el.message).join(',');
-    throw new ExpressError(msg, 400);
-  } else {
-    next();
-  }
-};
-
 
 //목록
 router.get('/', async (req, res) => {
@@ -53,7 +40,7 @@ router.get('/:id', catchAsync(async (req, res) => {
 }));
 
 //수정
-router.get('/:id/edit', isLoggedIn, catchAsync(async (req, res) => {
+router.get('/:id/edit', isLoggedIn, isAuthor, catchAsync(async (req, res) => {
   const { id } = req.params;
   
   const campground = await Campground.findById(id);  
@@ -62,25 +49,11 @@ router.get('/:id/edit', isLoggedIn, catchAsync(async (req, res) => {
     return res.redirect('/campgrounds');
   }
 
-  if(!campground.author.equals(req.user._id)) {
-    req.flash('error', '수정할 권한이 없습니다.');
-    return res.redirect(`/campgrounds/${id}`);
-  }
-
   res.render('campgrounds/edit', { campground });
 }));
 
-router.put('/:id', isLoggedIn, validateCampground, catchAsync(async (req, res) => {
+router.put('/:id', isLoggedIn, isAuthor, validateCampground, catchAsync(async (req, res) => {
   const { id } = req.params;
-  const campground = await Campground.findById(id);
-  if(!campground.author.equals(req.user._id)) {
-    req.flash('error', '수정할 권한이 없습니다.');
-    return res.status(403).send({
-        success: false, 
-        msg: '수정할 권한이 없습니다.'
-      });
-  }
-
   await Campground.findByIdAndUpdate(id, req.body);
   req.flash('success', '캠핑장을 수정했습니다.');
   res.send({
@@ -91,7 +64,7 @@ router.put('/:id', isLoggedIn, validateCampground, catchAsync(async (req, res) =
 }));
 
 //삭제
-router.delete('/:id', isLoggedIn, catchAsync(async (req, res) => {
+router.delete('/:id', isLoggedIn, isAuthor, catchAsync(async (req, res) => {
   const { id } = req.params;
   await Campground.findByIdAndDelete(id);
   req.flash('success', '캠핑장을 삭제했습니다.');
