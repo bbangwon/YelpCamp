@@ -1,6 +1,5 @@
 export const isLoggedIn = (req, res, next) => {
     if (!req.isAuthenticated()) {
-
         var contentType = req.header('content-type') || '';  
         if(contentType == 'application/json') 
         {
