@@ -33,21 +33,23 @@
             </div>
         </div>
         <div class="col-6">
-            <!-- 리뷰 폼 -->
-            <h2>리뷰를 남겨주세요</h2>
-            <form id="reviewForm" action="/campgrounds/<%= campground._id %>/reviews" class="mb-3 validated-form"
-                novalidate>
-                <div class="mb-3">
-                    <label for="rating" class="form-label">평점</label>
-                    <input type="range" class="form-range" min="1" max="5" name="rating" id="rating">
-                </div>
-                <div class="mb-3">
-                    <label for="body" class="form-label">리뷰</label>
-                    <textarea class="form-control" id="body" rows="3" required></textarea>
-                    <div class="valid-feedback">작성완료!</div>
-                </div>
-                <button id="reviewButton" class="btn btn-success">작성</button>
-            </form>
+            <% if (currentUser) { %>
+                <!-- 리뷰 폼 -->
+                <h2>리뷰를 남겨주세요</h2>
+                <form id="reviewForm" action="/campgrounds/<%= campground._id %>/reviews" class="mb-3 validated-form"
+                    novalidate>
+                    <div class="mb-3">
+                        <label for="rating" class="form-label">평점</label>
+                        <input type="range" class="form-range" min="1" max="5" name="rating" id="rating">
+                    </div>
+                    <div class="mb-3">
+                        <label for="body" class="form-label">리뷰</label>
+                        <textarea class="form-control" id="body" rows="3" required></textarea>
+                        <div class="valid-feedback">작성완료!</div>
+                    </div>
+                    <button id="reviewButton" class="btn btn-success">작성</button>
+                </form>             
+            <% } %>
             <% for(let review of campground.reviews) { %>
                 <div class="card mb-3">
                     <div class="card-body">
