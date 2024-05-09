@@ -39,7 +39,6 @@ router.post('/login', storeReturnTo, passport.authenticate('local', {
 }), (req, res) => {
     req.flash('success', `Yelp Camp에 오신 것을 환영합니다! ${req.user.username}님!`);    
     const redirectUrl = res.locals.returnTo || '/campgrounds';
-    console.log('redirectUrl: ' + redirectUrl);
     res.redirect(redirectUrl);
 });
 
