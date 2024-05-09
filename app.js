@@ -78,8 +78,9 @@ app.all('*', (req, res, next) => {
 app.use((err, req, res, next) => {
   const {statusCode = 500, message = '에러가 발생했습니다.'} = err;  
 
-  var contentType = req.header('content-type') || '';  
-  if(contentType == 'application/json') 
+  var contentType = req.header('content-type') || ''; 
+  if(req.method == "DELETE" || req.method == "PUT"  
+   || contentType == 'application/json') 
   {
     res.status(statusCode).send({success: false, msg: message});
   }

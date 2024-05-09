@@ -3,6 +3,7 @@ import { reviewSchema } from './schemas.js';
 
 import ExpressError from "./utils/ExpressError.js";
 import Campground from "./models/campground.js";
+import Review from "./models/review.js";
 
 
 export const storeReturnTo = (req, res, next) => {
@@ -16,7 +17,8 @@ export const isLoggedIn = (req, res, next) => {
     if (!req.isAuthenticated()) {
         req.session.returnTo = req.originalUrl;
         var contentType = req.header('content-type') || '';  
-        if(contentType == 'application/json') 
+        if(req.method == "DELETE" || req.method == "PUT" 
+            || contentType == 'application/json') 
         {
             return res.status(401).send(
                 {
@@ -40,7 +42,32 @@ export const isAuthor = async (req, res, next) => {
     if(!campground.author.equals(req.user._id)) {
   
       var contentType = req.header('content-type') || '';  
-      if(contentType == 'application/json') 
+      if(req.method == "DELETE" || req.method == "PUT" 
+        || contentType == 'application/json') 
+      {
+          return res.status(403).send({
+            success: false, 
+            msg: '권한이 없습니다.',
+            redirectUrl: `/campgrounds/${id}`
+          });
+      }
+      else 
+      {
+        req.flash('error', '권한이 없습니다.');
+        return res.redirect(`/campgrounds/${id}`);
+      }
+    }
+    next();
+  }
+
+  export const isReviewAuthor = async (req, res, next) => {
+    const { id, reviewId } = req.params;
+    const review = await Review.findById(reviewId);
+    if(!review.author.equals(req.user._id)) {
+  
+      var contentType = req.header('content-type') || '';  
+      if(req.method == "DELETE" || req.method == "PUT" 
+       || contentType == 'application/json') 
       {
           return res.status(403).send({
             success: false, 

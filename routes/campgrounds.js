@@ -31,7 +31,12 @@ router.post('/', isLoggedIn, validateCampground, catchAsync(async (req, res, nex
 //세부정보
 router.get('/:id', catchAsync(async (req, res) => {
   const { id } = req.params;
-  const campground = await Campground.findById(id).populate('reviews').populate('author');
+  const campground = await Campground.findById(id).populate({
+    path: 'reviews',
+    populate: { 
+      path: 'author'
+    }
+  }).populate('author');
   if(!campground){
     req.flash('error', '캠핑장을 찾을 수 없습니다.');
     return res.redirect('/campgrounds');

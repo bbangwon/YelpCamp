@@ -2,7 +2,7 @@ import express from 'express';
 import catchAsync from '../utils/catchAsync.js';
 import Campground from '../models/campground.js';
 import Review from '../models/review.js';
-import { validateReview, isLoggedIn } from '../middleware.js';
+import { validateReview, isLoggedIn, isReviewAuthor } from '../middleware.js';
 
 const router = express.Router({ mergeParams: true});
 
@@ -20,7 +20,7 @@ router.post('/', isLoggedIn, validateReview, catchAsync(async (req, res) => {
       id: id });
   }));
   
-router.delete('/:reviewId', isLoggedIn, catchAsync(async (req, res) => {
+router.delete('/:reviewId', isLoggedIn, isReviewAuthor, catchAsync(async (req, res) => {
     const { id, reviewId } = req.params;
     await Campground.findByIdAndUpdate(id, { $pull: { reviews: reviewId } });
     await Review.findByIdAndDelete(reviewId);
