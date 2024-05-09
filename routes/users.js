@@ -2,6 +2,7 @@ import express from 'express';
 import catchAsync from '../utils/catchAsync.js';
 import User from '../models/user.js';
 import passport from 'passport';
+import { storeReturnTo } from '../middleware.js';
 
 const router = express.Router();
 
@@ -32,12 +33,14 @@ router.get('/login', (req, res) => {
     res.render('users/login');
 });
 
-router.post('/login', passport.authenticate('local', {
+router.post('/login', storeReturnTo, passport.authenticate('local', {
     failureFlash: '로그인에 실패했습니다. 다시 시도하세요.',
     failureRedirect: '/login',
 }), (req, res) => {
-    req.flash('success', `Yelp Camp에 오신 것을 환영합니다! ${req.user.username}님!`);
-    res.redirect('/campgrounds');
+    req.flash('success', `Yelp Camp에 오신 것을 환영합니다! ${req.user.username}님!`);    
+    const redirectUrl = res.locals.returnTo || '/campgrounds';
+    console.log('redirectUrl: ' + redirectUrl);
+    res.redirect(redirectUrl);
 });
 
 router.get('/logout', (req, res, next) => {
