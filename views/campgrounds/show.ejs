@@ -20,10 +20,13 @@
                     </li>
                     <li class="list-group-item">￦<%= campground.price %>/night</li>
                 </ul>
-                <div class="card-body">
-                    <a href="/campgrounds/<%= campground._id %>/edit" class="card-link btn btn-info">수정</a>
-                    <a href="#" id="deleteButton" class="card-link btn btn-danger">삭제</a>
-                </div>
+                <% if (currentUser && campground.author.equals(currentUser._id)) { %>
+                    <div class="card-body">
+                        <a href="/campgrounds/<%= campground._id %>/edit" class="card-link btn btn-info">수정</a>
+                        <a href="#" id="deleteButton" class="card-link btn btn-danger">삭제</a>
+                    </div>                 
+                <% } %>
+
                 <div class="card-footer text-muted">
                     2일 전
                 </div>
