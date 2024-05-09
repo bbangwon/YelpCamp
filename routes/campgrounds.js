@@ -55,16 +55,32 @@ router.get('/:id', catchAsync(async (req, res) => {
 //수정
 router.get('/:id/edit', isLoggedIn, catchAsync(async (req, res) => {
   const { id } = req.params;
+  
   const campground = await Campground.findById(id);  
   if(!campground){
     req.flash('error', '캠핑장을 찾을 수 없습니다.');
     return res.redirect('/campgrounds');
   }
+
+  if(!campground.author.equals(req.user._id)) {
+    req.flash('error', '수정할 권한이 없습니다.');
+    return res.redirect(`/campgrounds/${id}`);
+  }
+
   res.render('campgrounds/edit', { campground });
 }));
 
 router.put('/:id', isLoggedIn, validateCampground, catchAsync(async (req, res) => {
   const { id } = req.params;
+  const campground = await Campground.findById(id);
+  if(!campground.author.equals(req.user._id)) {
+    req.flash('error', '수정할 권한이 없습니다.');
+    return res.status(403).send({
+        success: false, 
+        msg: '수정할 권한이 없습니다.'
+      });
+  }
+
   await Campground.findByIdAndUpdate(id, req.body);
   req.flash('success', '캠핑장을 수정했습니다.');
   res.send({
