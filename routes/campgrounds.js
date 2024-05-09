@@ -30,8 +30,8 @@ router.get('/new', isLoggedIn, (req, res) => {
 });
 
 router.post('/', isLoggedIn, validateCampground, catchAsync(async (req, res, next) => {
-
   const campground = new Campground(req.body);
+  campground.author = req.user._id;
   await campground.save();
   req.flash('success', '캠핑장을 추가했습니다.');
   res.send({
@@ -44,7 +44,7 @@ router.post('/', isLoggedIn, validateCampground, catchAsync(async (req, res, nex
 //세부정보
 router.get('/:id', catchAsync(async (req, res) => {
   const { id } = req.params;
-  const campground = await Campground.findById(id).populate('reviews');
+  const campground = await Campground.findById(id).populate('reviews').populate('author');
   if(!campground){
     req.flash('error', '캠핑장을 찾을 수 없습니다.');
     return res.redirect('/campgrounds');
