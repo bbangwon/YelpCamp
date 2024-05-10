@@ -5,21 +5,19 @@ import { isLoggedIn, validateCampground, isAuthor } from '../middleware.js';
 
 const router = express.Router();
 
-//목록
-router.get('/', campgrounds.index);
+router.route('/')
+    .get(catchAsync(campgrounds.index))         //캠핑장 목록
+    .post(isLoggedIn, validateCampground, catchAsync(campgrounds.createCampground));    //캠핑장 추가
 
-//추가
+    //추가
 router.get('/new', isLoggedIn, campgrounds.renderNewForm);
-router.post('/', isLoggedIn, validateCampground, catchAsync(campgrounds.createCampground));
 
-//세부정보
-router.get('/:id', catchAsync(campgrounds.showCampground));
+router.route('/:id')
+    .get(catchAsync(campgrounds.showCampground))        //캠핑장 세부정보
+    .put(isLoggedIn, isAuthor, validateCampground, catchAsync(campgrounds.updateCampground))    //캠핑장 수정
+    .delete(isLoggedIn, isAuthor, catchAsync(campgrounds.deleteCampground));    //캠핑장 삭제
 
 //수정
 router.get('/:id/edit', isLoggedIn, isAuthor, catchAsync(campgrounds.renderEditForm));
-router.put('/:id', isLoggedIn, isAuthor, validateCampground, catchAsync(campgrounds.updateCampground));
-
-//삭제
-router.delete('/:id', isLoggedIn, isAuthor, catchAsync(campgrounds.deleteCampground));
 
 export default router;
