@@ -1,4 +1,6 @@
 <% layout('/layouts/boilerplate') %>
+    <link rel="stylesheet" href="/css/stars.css">
+
     <div class="row">
         <div class="col-6">
             <div class="card mb-3">
@@ -48,28 +50,29 @@
                         <div class="valid-feedback">작성완료!</div>
                     </div>
                     <button id="reviewButton" class="btn btn-success">작성</button>
-                </form>             
-            <% } %>
-            <% for(let review of campground.reviews) { %>
-                <div class="card mb-3">
-                    <div class="card-body">
-                        <h5 class="card-title">
-                            평점 : <%= review.rating %>
-                        </h5>
-                        <h6 class="card-subtitle mb-2 text-muted">
-                            <%= review.author.username %>이 작성함.
-                        </h6>
-                        <p class="card-text">
-                            리뷰 : <%= review.body %>
-                        </p>
-                        <% if (currentUser && review.author.equals(currentUser._id)) { %>
-                        <form action="/campgrounds/<%= campground._id %>/reviews/<%= review._id %>" method="POST">
-                            <button name="reviewDeleteButton" class="btn btn-sm btn-danger">삭제</button>
-                        </form>
-                        <% } %>
-                    </div>
-                </div>
+                </form>
                 <% } %>
+                    <% for(let review of campground.reviews) { %>
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    <%= review.author.username %>
+                                </h5>
+                                <p class="starability-result" data-rating="<%= review.rating %>">
+                                    평점: <%= review.rating %>
+                                </p>
+                                <p class="card-text">
+                                    리뷰 : <%= review.body %>
+                                </p>
+                                <% if (currentUser && review.author.equals(currentUser._id)) { %>
+                                    <form action="/campgrounds/<%= campground._id %>/reviews/<%= review._id %>"
+                                        method="POST">
+                                        <button name="reviewDeleteButton" class="btn btn-sm btn-danger">삭제</button>
+                                    </form>
+                                    <% } %>
+                            </div>
+                        </div>
+                        <% } %>
         </div>
     </div>
 
@@ -89,10 +92,9 @@
                     })
                     .catch(err => {
                         alert(err.response.data.msg);
-                        if(err.response.data.redirectUrl)
-                        {
+                        if (err.response.data.redirectUrl) {
                             window.location.href = err.response.data.redirectUrl;
-                        }  
+                        }
                     });
             });
         }
@@ -125,10 +127,9 @@
                     })
                     .catch(err => {
                         alert(err.response.data.msg);
-                        if(err.response.data.redirectUrl)
-                        {
+                        if (err.response.data.redirectUrl) {
                             window.location.href = err.response.data.redirectUrl;
-                        }  
+                        }
                     });
             });
         }
@@ -138,7 +139,7 @@
             reviewDeleteButtons.forEach(button => {
                 button.addEventListener('click', e => {
                     e.preventDefault();
-                    
+
                     const form = button.parentElement;
                     axios.delete(form.action)
                         .then(res => {
@@ -150,10 +151,9 @@
                         })
                         .catch(err => {
                             alert(err.response.data.msg);
-                            if(err.response.data.redirectUrl)
-                            {                                
+                            if (err.response.data.redirectUrl) {
                                 window.location.href = err.response.data.redirectUrl;
-                            }  
+                            }
                         });
                 });
             });
