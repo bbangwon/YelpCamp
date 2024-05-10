@@ -8,10 +8,13 @@ export default {
     renderNewForm: (req, res) => {
         res.render('campgrounds/new');
     },
-    createCampground: async (req, res, next) => {
+    createCampground: async (req, res, next) => {        
         const campground = new Campground(req.body);
+
+        campground.images = req.files.map(f => ({url: f.path, filename: f.filename}));
         campground.author = req.user._id;
         await campground.save();
+        console.log(campground);
         req.flash('success', '캠핑장을 추가했습니다.');
         res.send({
             success: true,

@@ -11,13 +11,7 @@ const router = express.Router();
 
 router.route('/')
     .get(catchAsync(campgrounds.index))         //캠핑장 목록
-    .post(upload.array('image'), (req, res) => {    
-        console.log(req.body);
-        console.dir(req.files);
-
-        res.send({ success: true });
-    });
-    //.post(isLoggedIn, validateCampground, catchAsync(campgrounds.createCampground));    //캠핑장 추가
+    .post(isLoggedIn, upload.array('image'), validateCampground, catchAsync(campgrounds.createCampground));    //캠핑장 추가
 
     //추가
 router.get('/new', isLoggedIn, campgrounds.renderNewForm);
