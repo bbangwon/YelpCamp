@@ -13,7 +13,7 @@
                     <input class="form-control" type="text" id="location" placeholder="위치" required>
                     <div class="valid-feedback">작성완료!</div>
                 </div>
-                <input type="file" name="image" id="image">
+                <input type="file" name="image" id="image" multiple>
                 <!-- <div class="mb-3">
                     <label class="form-label" for="image">캠핑장 이미지 URL</label>
                     <input class="form-control" type="text" id="image" placeholder="https://" required>
@@ -60,15 +60,22 @@
             let formData = new FormData();
             formData.append('title', title.value);
             formData.append('location', location.value);
-            formData.append('image', image.files[0]);
+            
+            for(let i=0; i<image.files.length; i++)
+            {
+                formData.append('image', image.files[i]);
+            }
+
             formData.append('price', price.value);
             formData.append('description', description.value);
-
 
             axios.post(form.action, formData)
                 .then(res => {
                     if (res.data.success) {
-                        window.location.href = '/campgrounds/' + res.data.id;
+                        if(!res.data.id)
+                            window.location.href = '/campgrounds';
+                        else
+                            window.location.href = '/campgrounds/' + res.data.id;
                     } else {
                         alert(res.data.msg);
                     }

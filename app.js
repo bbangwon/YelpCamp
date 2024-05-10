@@ -1,4 +1,3 @@
-import dotenv from 'dotenv';
 import express from 'express';
 import { fileURLToPath } from "url";
 import mongoose from 'mongoose';
@@ -13,10 +12,6 @@ import User from './models/user.js';
 import userRoutes from './routes/users.js'; 
 import campgroundRoutes from './routes/campgrounds.js';
 import reviewRoutes from './routes/reviews.js';
-
-if(process.env.NODE_ENV !== "production") {
-  dotenv.config();
-}
 
 mongoose.connect('mongodb://localhost:27017/yelp-camp');
 

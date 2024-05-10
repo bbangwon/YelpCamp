@@ -3,15 +3,18 @@ import campgrounds from '../controllers/campgrounds.js';
 import catchAsync from '../utils/catchAsync.js';
 import { isLoggedIn, validateCampground, isAuthor } from '../middleware.js';
 import multer from 'multer';
+import { storage } from '../cloudinary/index.js';
 
-const upload = multer({ dest: 'uploads/' });
+const upload = multer({ storage });
 
 const router = express.Router();
 
 router.route('/')
     .get(catchAsync(campgrounds.index))         //캠핑장 목록
-    .post(upload.single('image'), (req, res) => {    
-        console.log(req.body, req.file);
+    .post(upload.array('image'), (req, res) => {    
+        console.log(req.body);
+        console.dir(req.files);
+
         res.send({ success: true });
     });
     //.post(isLoggedIn, validateCampground, catchAsync(campgrounds.createCampground));    //캠핑장 추가
