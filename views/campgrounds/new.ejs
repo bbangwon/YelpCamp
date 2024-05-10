@@ -2,7 +2,7 @@
     <div class="row">
         <h1 class="text-center">새 캠핑장</h1>
         <div class="col-6 offset-3">
-            <form id="addForm" action="/campgrounds" method="post" novalidate class="validated-form">
+            <form id="addForm" action="/campgrounds" method="post" novalidate class="validated-form" enctype="multipart/form-data">
                 <div class="mb-3">
                     <label class="form-label" for="title">캠핑장 이름</label>
                     <input class="form-control" type="text" id="title" placeholder="이름" required>
@@ -13,11 +13,12 @@
                     <input class="form-control" type="text" id="location" placeholder="위치" required>
                     <div class="valid-feedback">작성완료!</div>
                 </div>
-                <div class="mb-3">
+                <input type="file" name="image" id="image">
+                <!-- <div class="mb-3">
                     <label class="form-label" for="image">캠핑장 이미지 URL</label>
                     <input class="form-control" type="text" id="image" placeholder="https://" required>
                     <div class="valid-feedback">작성완료!</div>
-                </div>
+                </div> -->
                 <div class="mb-3">
                     <label class="form-label" for="price">캠핑장 가격</label>
                     <div class="input-group">
@@ -56,13 +57,15 @@
             const price = document.querySelector('#price');
             const description = document.querySelector('#description');
 
-            axios.post(form.action, {
-                title: title.value,
-                location: location.value,
-                image: image.value,
-                price: price.value,
-                description: description.value
-            })
+            let formData = new FormData();
+            formData.append('title', title.value);
+            formData.append('location', location.value);
+            formData.append('image', image.files[0]);
+            formData.append('price', price.value);
+            formData.append('description', description.value);
+
+
+            axios.post(form.action, formData)
                 .then(res => {
                     if (res.data.success) {
                         window.location.href = '/campgrounds/' + res.data.id;

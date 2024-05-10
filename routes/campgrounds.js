@@ -2,12 +2,19 @@ import express from 'express';
 import campgrounds from '../controllers/campgrounds.js';
 import catchAsync from '../utils/catchAsync.js';
 import { isLoggedIn, validateCampground, isAuthor } from '../middleware.js';
+import multer from 'multer';
+
+const upload = multer({ dest: 'uploads/' });
 
 const router = express.Router();
 
 router.route('/')
     .get(catchAsync(campgrounds.index))         //캠핑장 목록
-    .post(isLoggedIn, validateCampground, catchAsync(campgrounds.createCampground));    //캠핑장 추가
+    .post(upload.single('image'), (req, res) => {    
+        console.log(req.body, req.file);
+        res.send({ success: true });
+    });
+    //.post(isLoggedIn, validateCampground, catchAsync(campgrounds.createCampground));    //캠핑장 추가
 
     //추가
 router.get('/new', isLoggedIn, campgrounds.renderNewForm);
