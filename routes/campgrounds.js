@@ -18,7 +18,7 @@ router.get('/new', isLoggedIn, campgrounds.renderNewForm);
 
 router.route('/:id')
     .get(catchAsync(campgrounds.showCampground))        //캠핑장 세부정보
-    .put(isLoggedIn, isAuthor, validateCampground, catchAsync(campgrounds.updateCampground))    //캠핑장 수정
+    .put(isLoggedIn, isAuthor, upload.array('image'), validateCampground, catchAsync(campgrounds.updateCampground))    //캠핑장 수정
     .delete(isLoggedIn, isAuthor, catchAsync(campgrounds.deleteCampground));    //캠핑장 삭제
 
 //수정

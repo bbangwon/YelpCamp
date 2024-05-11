@@ -1,3 +1,4 @@
+import campground from '../models/campground.js';
 import Campground from '../models/campground.js';
 
 export default {
@@ -10,7 +11,6 @@ export default {
     },
     createCampground: async (req, res, next) => {        
         const campground = new Campground(req.body);
-
         campground.images = req.files.map(f => ({url: f.path, filename: f.filename}));
         campground.author = req.user._id;
         await campground.save();
@@ -49,7 +49,10 @@ export default {
     },
     updateCampground: async (req, res) => {
         const { id } = req.params;
-        await Campground.findByIdAndUpdate(id, req.body);
+        const campground = await Campground.findByIdAndUpdate(id, req.body);
+        const imgs = req.files.map(f => ({url: f.path, filename: f.filename}));
+        campground.images.push(...imgs);
+        await campground.save();
         req.flash('success', '캠핑장을 수정했습니다.');
         res.send({
             success: true,
