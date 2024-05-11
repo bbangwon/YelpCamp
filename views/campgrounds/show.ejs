@@ -3,10 +3,28 @@
 
     <div class="row">
         <div class="col-6">
-            <div class="card mb-3">
-                <% for( let image of campground.images) { %>
-                    <img src="<%= image.url %>" class="card-img-top" alt="...">
+            <div id="campgroundCarousel" class="carousel slide">
+                <div class="carousel-inner">
+                    <% campground.images.forEach((img, i) => { %>
+                        <div class="carousel-item <%= i === 0? 'active':'' %>">
+                            <img src="<%= img.url %>" class="d-block w-100" alt="">
+                        </div>
+                    <% }); %>
+                </div>
+                <% if (campground.images.length > 1) { %>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#campgroundCarousel"
+                        data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#campgroundCarousel"
+                        data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>                 
                 <% } %>
+            </div>
+            <div class="card mb-3">
                 <div class="card-body">
                     <h5 class="card-title">
                         <%= campground.title %>
@@ -44,7 +62,8 @@
                     novalidate>
                     <div class="mb-3">
                         <fieldset class="starability-basic">
-                            <input type="radio" id="no-rate" class="input-no-rate" name="rating" value="1" checked aria-label="No rating." />
+                            <input type="radio" id="no-rate" class="input-no-rate" name="rating" value="1" checked
+                                aria-label="No rating." />
                             <input type="radio" id="first-rate1" name="rating" value="1" />
                             <label for="first-rate1" title="Terrible">1 star</label>
                             <input type="radio" id="first-rate2" name="rating" value="2" />
@@ -55,7 +74,7 @@
                             <label for="first-rate4" title="Very good">4 stars</label>
                             <input type="radio" id="first-rate5" name="rating" value="5" />
                             <label for="first-rate5" title="Amazing">5 stars</label>
-                          </fieldset>
+                        </fieldset>
                     </div>
                     <div class="mb-3">
                         <label for="body" class="form-label">리뷰</label>
