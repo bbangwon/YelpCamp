@@ -2,7 +2,8 @@
     <div class="row">
         <h1 class="text-center">새 캠핑장</h1>
         <div class="col-6 offset-3">
-            <form id="addForm" action="/campgrounds" method="post" novalidate class="validated-form" enctype="multipart/form-data">
+            <form id="addForm" action="/campgrounds" method="post" novalidate class="validated-form"
+                enctype="multipart/form-data">
                 <div class="mb-3">
                     <label class="form-label" for="title">캠핑장 이름</label>
                     <input class="form-control" type="text" id="title" placeholder="이름" required>
@@ -13,7 +14,6 @@
                     <input class="form-control" type="text" id="location" placeholder="위치" required>
                     <div class="valid-feedback">작성완료!</div>
                 </div>
-                <input type="file" name="image" id="image" multiple>
                 <div class="mb-3">
                     <label class="form-label" for="price">캠핑장 가격</label>
                     <div class="input-group">
@@ -22,11 +22,14 @@
                         <div class="valid-feedback">작성완료!</div>
                     </div>
                 </div>
-
                 <div class="mb-3">
                     <label class="form-label" for="description">캠핑장 설명</label>
                     <textarea class="form-control" id="description" placeholder="설명" required></textarea>
                     <div class="valid-feedback">작성완료!</div>
+                </div>
+                <div class="mb-3">
+                    <label for="image" class="form-label">캠핑장 이미지</label>
+                    <input class="form-control" type="file" id="image" name="image" multiple>
                 </div>
                 <div class="mb-3">
                     <button class="btn btn-success" id="addButton">캠핑장 추가</button>
@@ -55,9 +58,8 @@
             let formData = new FormData();
             formData.append('title', title.value);
             formData.append('location', location.value);
-            
-            for(let i=0; i<image.files.length; i++)
-            {
+
+            for (let i = 0; i < image.files.length; i++) {
                 formData.append('image', image.files[i]);
             }
 
@@ -67,7 +69,7 @@
             axios.post(form.action, formData)
                 .then(res => {
                     if (res.data.success) {
-                        if(!res.data.id)
+                        if (!res.data.id)
                             window.location.href = '/campgrounds';
                         else
                             window.location.href = '/campgrounds/' + res.data.id;
@@ -77,10 +79,9 @@
                 })
                 .catch(err => {
                     alert(err.response.data.msg);
-                    if(err.response.data.redirectUrl)
-                    {
+                    if (err.response.data.redirectUrl) {
                         window.location.href = err.response.data.redirectUrl;
-                    }  
+                    }
                 });
         });
     </script>
