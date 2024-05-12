@@ -35,6 +35,15 @@
                     <input class="form-control" type="file" id="image" name="image" multiple>
                 </div>
                 <div class="mb-3">
+                    <% campground.images.forEach(function(img, i){ %>
+                        <img src="<%= img.url %>" class="img-thumbnail" alt="">
+                        <div class="form-check-inline">
+                            <input type="checkbox" id="image-<%=i%>" name="deleteImages[]" value="<%=img.filename%>">
+                        </div>
+                        <label for="image-<%=i%>">삭제?</label>
+                    <% }); %>
+                </div>
+                <div class="mb-3">
                     <button class="btn btn-info" id="editButton">캠핑장 수정</button>
                 </div>
             </form>
@@ -60,6 +69,8 @@
             const price = document.querySelector('#price');
             const description = document.querySelector('#description');
 
+            const deleteImages = document.querySelectorAll('input[name="deleteImages[]"]:checked');
+
             let formData = new FormData();
             formData.append('title', title.value);
             formData.append('location', location.value);
@@ -71,6 +82,11 @@
 
             formData.append('price', price.value);
             formData.append('description', description.value);
+
+            deleteImages.forEach(img => {
+                formData.append('deleteImages', img.value);
+            });
+            
 
             axios.put(form.action, formData)
                 .then(res => {

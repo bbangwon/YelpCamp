@@ -1,5 +1,5 @@
-import campground from '../models/campground.js';
 import Campground from '../models/campground.js';
+import { cloudinary } from '../cloudinary/index.js';
 
 export default {
     index: async (req, res) => {
@@ -9,12 +9,11 @@ export default {
     renderNewForm: (req, res) => {
         res.render('campgrounds/new');
     },
-    createCampground: async (req, res, next) => {        
+    createCampground: async (req, res, next) => {
         const campground = new Campground(req.body);
-        campground.images = req.files.map(f => ({url: f.path, filename: f.filename}));
+        campground.images = req.files.map(f => ({ url: f.path, filename: f.filename }));
         campground.author = req.user._id;
         await campground.save();
-        console.log(campground);
         req.flash('success', '캠핑장을 추가했습니다.');
         res.send({
             success: true,
@@ -49,10 +48,24 @@ export default {
     },
     updateCampground: async (req, res) => {
         const { id } = req.params;
+        console.log(req.body);
         const campground = await Campground.findByIdAndUpdate(id, req.body);
-        const imgs = req.files.map(f => ({url: f.path, filename: f.filename}));
+        const imgs = req.files.map(f => ({ url: f.path, filename: f.filename }));
         campground.images.push(...imgs);
         await campground.save();
+
+        if (req.body.deleteImages) {
+            if (typeof req.body.deleteImages === 'string') {
+                await cloudinary.uploader.destroy(req.body.deleteImages);
+                await campground.updateOne({ $pull: { images: { filename: req.body.deleteImages } } });
+            } else {
+                for (let filename of req.body.deleteImages) {
+                    await cloudinary.uploader.destroy(filename);
+                }
+                await campground.updateOne({ $pull: { images: { filename: { $in: req.body.deleteImages } } } });
+            }
+        }
+
         req.flash('success', '캠핑장을 수정했습니다.');
         res.send({
             success: true,
