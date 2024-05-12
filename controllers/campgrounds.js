@@ -1,5 +1,9 @@
 import Campground from '../models/campground.js';
+import mbxGeocoding from '@mapbox/mapbox-sdk/services/geocoding.js';
 import { cloudinary } from '../cloudinary/index.js';
+
+const mapBoxToken = process.env.MAPBOX_TOKEN;
+const geocoder = mbxGeocoding({ accessToken: mapBoxToken });
 
 export default {
     index: async (req, res) => {
@@ -10,6 +14,13 @@ export default {
         res.render('campgrounds/new');
     },
     createCampground: async (req, res, next) => {
+        const geoData = await geocoder.forwardGeocode({
+            query: req.body.location,
+            limit: 1
+        }).send();
+        console.log(geoData.body.features[0].geometry.coordinates);
+        return res.send('OK');
+
         const campground = new Campground(req.body);
         campground.images = req.files.map(f => ({ url: f.path, filename: f.filename }));
         campground.author = req.user._id;
@@ -48,7 +59,6 @@ export default {
     },
     updateCampground: async (req, res) => {
         const { id } = req.params;
-        console.log(req.body);
         const campground = await Campground.findByIdAndUpdate(id, req.body);
         const imgs = req.files.map(f => ({ url: f.path, filename: f.filename }));
         campground.images.push(...imgs);
