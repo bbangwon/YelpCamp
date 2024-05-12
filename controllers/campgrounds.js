@@ -18,10 +18,8 @@ export default {
             query: req.body.location,
             limit: 1
         }).send();
-        console.log(geoData.body.features[0].geometry.coordinates);
-        return res.send('OK');
-
         const campground = new Campground(req.body);
+        campground.geometry = geoData.body.features[0].geometry;
         campground.images = req.files.map(f => ({ url: f.path, filename: f.filename }));
         campground.author = req.user._id;
         await campground.save();
