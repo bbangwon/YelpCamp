@@ -42,11 +42,13 @@ app.use(mongoSanitize());
 
 
 const sessionConfig = {
+  name: 'session',  //쿠키 이름
   secret: 'thisshouldbeabettersecret!', //세션 암호화에 사용할 키
   resave: false,  //세션에 변화가 없어도 다시 저장할지 여부
   saveUninitialized: true,  //세션에 저장된 내용이 없어도 저장할지 여부
   cookie: {
     httpOnly: true,  //자바스크립트로 쿠키에 접근하지 못하도록 함
+    // secure: true,   //https에서만 쿠키를 전송하도록 함. (배포시 주석 해제)
     expires: Date.now() + 1000 * 60 * 60 * 24 * 7,  //쿠키 만료 시간
     maxAge: 1000 * 60 * 60 * 24 * 7 //쿠키 만료 시간
   }
