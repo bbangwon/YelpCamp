@@ -19,7 +19,7 @@ import helmet from 'helmet';
 
 
 //const dbUrl = process.env.DB_URL
-const dbUrl = 'mongodb://localhost:27017/yelp-camp';
+const dbUrl = process.env.DB_URL || 'mongodb://localhost:27017/yelp-camp';
 
 mongoose.connect(dbUrl);
 
@@ -46,9 +46,11 @@ app.use(express.static(publicFolder));
 //MongoDB Injection 방지
 app.use(mongoSanitize());
 
+const secret = process.env.SECRET || 'thisshouldbeabettersecret!';
+
 const store = MongoStore.create({  
   mongoUrl: dbUrl, //세션 저장소로 사용할 데이터베이스 주소
-  secret: 'thisshouldbeabettersecret!', //세션 암호화에 사용할 키
+  secret, //세션 암호화에 사용할 키
   touchAfter: 24 * 3600  //세션을 업데이트하는 주기
 });
 
@@ -59,7 +61,7 @@ store.on("error", function(e) {
 const sessionConfig = {
   store,
   name: 'session',  //쿠키 이름
-  secret: 'thisshouldbeabettersecret!', //세션 암호화에 사용할 키
+  secret, //세션 암호화에 사용할 키
   resave: false,  //세션에 변화가 없어도 다시 저장할지 여부
   saveUninitialized: true,  //세션에 저장된 내용이 없어도 저장할지 여부
   cookie: {
@@ -159,6 +161,7 @@ app.use((err, req, res, next) => {
   }
 });
 
-app.listen(3000, () => {
-  console.log('3000번 포트에서 서버 대기 중입니다.');
+const port = process.env.PORT || 3000;
+app.listen(port, () => {
+  console.log(`${port}번 포트에서 서버 대기 중입니다.`);
 });
