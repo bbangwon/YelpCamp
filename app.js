@@ -13,6 +13,8 @@ import userRoutes from './routes/users.js';
 import campgroundRoutes from './routes/campgrounds.js';
 import reviewRoutes from './routes/reviews.js';
 
+import mongoSanitize from 'express-mongo-sanitize';
+
 mongoose.connect('mongodb://localhost:27017/yelp-camp');
 
 const db = mongoose.connection;
@@ -35,6 +37,10 @@ app.set('view engine', 'ejs');
 const publicFolder = fileURLToPath(new URL("./public", import.meta.url));
 app.use(express.static(publicFolder));
 
+//MongoDB Injection 방지
+app.use(mongoSanitize());
+
+
 const sessionConfig = {
   secret: 'thisshouldbeabettersecret!', //세션 암호화에 사용할 키
   resave: false,  //세션에 변화가 없어도 다시 저장할지 여부
@@ -56,6 +62,7 @@ passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
 app.use((req, res, next) => {
+  console.log(req.query);
   res.locals.currentUser = req.user;
   res.locals.success = req.flash('success');
   res.locals.error = req.flash('error');
