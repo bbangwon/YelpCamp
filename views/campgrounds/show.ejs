@@ -147,8 +147,6 @@
                 const rating = document.querySelector('input[name="rating"]:checked').value;
                 const body = document.querySelector('#body').value;
 
-                alert(rating);
-
                 axios.post(form.action, {
                     rating,
                     body
