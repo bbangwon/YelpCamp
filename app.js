@@ -12,6 +12,7 @@ import User from './models/user.js';
 import userRoutes from './routes/users.js'; 
 import campgroundRoutes from './routes/campgrounds.js';
 import reviewRoutes from './routes/reviews.js';
+import MongoStore from 'connect-mongo';
 
 import mongoSanitize from 'express-mongo-sanitize';
 import helmet from 'helmet';
@@ -45,8 +46,18 @@ app.use(express.static(publicFolder));
 //MongoDB Injection 방지
 app.use(mongoSanitize());
 
+const store = MongoStore.create({  
+  mongoUrl: dbUrl, //세션 저장소로 사용할 데이터베이스 주소
+  secret: 'thisshouldbeabettersecret!', //세션 암호화에 사용할 키
+  touchAfter: 24 * 3600  //세션을 업데이트하는 주기
+});
+
+store.on("error", function(e) {
+  console.log("세션 저장소 오류", e);
+});
 
 const sessionConfig = {
+  store,
   name: 'session',  //쿠키 이름
   secret: 'thisshouldbeabettersecret!', //세션 암호화에 사용할 키
   resave: false,  //세션에 변화가 없어도 다시 저장할지 여부
@@ -56,7 +67,7 @@ const sessionConfig = {
     // secure: true,   //https에서만 쿠키를 전송하도록 함. (배포시 주석 해제)
     expires: Date.now() + 1000 * 60 * 60 * 24 * 7,  //쿠키 만료 시간
     maxAge: 1000 * 60 * 60 * 24 * 7 //쿠키 만료 시간
-  }
+  }   
 }
 app.use(session(sessionConfig));
 app.use(flash());  
